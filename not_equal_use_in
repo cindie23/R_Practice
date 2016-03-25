@@ -1,0 +1,8 @@
+data = read.csv(file.choose(),stringsAsFactors=F)
+
+#test= setdiff(data[,"履歷編號" ],unique(data[,"履歷編號" ]))
+temp = as.data.frame(table(data[,"履歷編號" ]))
+temp = temp[which(temp[,2]>1),1]
+
+tempdf = data[which(data$履歷編號 %in% temp),]
+##要用%in% 不是==
