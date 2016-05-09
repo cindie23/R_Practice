@@ -5,8 +5,8 @@ ref <- c('cat', 'dog', 'turtle', 'cow', 'horse', 'pig', 'sheep', 'koala','bear',
 words <- c('dog', 'kiwi', 'emu', 'pig', 'sheep', 'cow','cat','horse')
 
 
-ref = 'NB/PAD RF無線通訊效能評估測試'
-words = 'NB/PAD RF無線通訊模組整合應用'
+ref = 'NB/PAD RF無線通訊效能'
+words = 'NB/PAD RF無線通訊'
 
 ##match to each one
 wordlist <- expand.grid(words = words, ref = ref, stringsAsFactors = FALSE)
