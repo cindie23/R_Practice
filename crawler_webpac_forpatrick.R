@@ -27,3 +27,4 @@ export_df$繻旅计 = trim(gsub('繻旅瑈硄篈:','',export_df$繻旅计))
 for(i in 1:nrow(export_df)){
   export_df$繻旅计[i] = substr(export_df$繻旅计[i],1,unlist(gregexpr(pattern ='繻旅',export_df$繻旅计[i]))[1]-1)
 }
+
