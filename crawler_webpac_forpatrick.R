@@ -30,11 +30,12 @@ for(xx in 1:length(name_list)){
   tryCatch({
     n = name_list[xx]
     n_trim = gsub('[a-zA-Z]','+',n)
-    n_trim = gsub('%','',n_trim)
+    n_trim = gsub('%',' ',n_trim)
     n_trim = gsub(' ','+',n_trim)
     n_trim = trim(n_trim)
     n_trim = trim_num(n_trim)
     n_trim = unlist(strsplit(n_trim,'：'))[1]
+    n_trim = unlist(strsplit(n_trim,':'))[1]
     
     url = paste0(tmp_url,n_trim)
     total_css = read_html(url)
@@ -47,8 +48,19 @@ for(xx in 1:length(name_list)){
     #catch_ISBN = content_css[(which(grepl('ISBN',content_css))[1]+1):(length(content_css))]
     #catch_ISBN = content_css[(which(grepl('ISBN',content_css))[1]+1):(length(content_css))]
     #catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css) & grepl(trim_split_punc(n),content_css))[1]+1):(length(content_css))]
-    catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css) & grepl(trim_split_punc(n_trim),content_css))[1])]
+    catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css) & grepl(trim_split_punc(n_trim),content_css)))]
+    catch_ISBN2 =''
+    if(length(catch_ISBN)>1){
+      catch_ISBN2 = catch_ISBN[which(grepl(substr(df$出版社[xx],1,2),catch_ISBN))]
+    }
+    if(toString(catch_ISBN2)!=''){
+      catch_ISBN = catch_ISBN2
+    }
     catch_ISBN = unlist(strsplit(catch_ISBN,'                                      '))
+    
+    if(is.null(catch_ISBN)){
+      catch_ISBN = content_css
+    }
     
     books = trim(gsub('館藏流通狀態:','',catch_ISBN[which(grepl('館藏流通狀態',catch_ISBN) & !grepl('版本項',catch_ISBN))]))
     
