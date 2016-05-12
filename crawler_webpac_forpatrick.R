@@ -34,6 +34,7 @@ for(xx in 1:length(name_list)){
     n_trim = gsub(' ','+',n_trim)
     n_trim = trim(n_trim)
     n_trim = trim_num(n_trim)
+    n_trim = unlist(strsplit(n_trim,'¡G'))[1]
     
     url = paste0(tmp_url,n_trim)
     total_css = read_html(url)
