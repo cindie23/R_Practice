@@ -36,6 +36,8 @@ for(xx in 1:length(name_list)){
     n_trim = trim_num(n_trim)
     n_trim = unlist(strsplit(n_trim,'：'))[1]
     n_trim = unlist(strsplit(n_trim,':'))[1]
+    n_trim = unlist(strsplit(n_trim,'，'))[1]
+    
     
     url = paste0(tmp_url,n_trim)
     total_css = read_html(url)
@@ -69,8 +71,8 @@ for(xx in 1:length(name_list)){
     }
     books = sum(as.numeric(books))
     
-    export_df[which(export_df$名稱==n),2:4] = c(unique(trim(gsub('ISBN:','',catch_ISBN[which(grepl('ISBN',catch_ISBN) & !grepl('出版',catch_ISBN))])))
-                      ,unique(trim(gsub('出版年:','',catch_ISBN[which(grepl('出版年',catch_ISBN) & !grepl('流通',catch_ISBN))])))
+    export_df[which(export_df$名稱==n),2:4] = c(unique(trim(gsub('ISBN:','',catch_ISBN[which(grepl('ISBN',catch_ISBN) & !grepl('出版',catch_ISBN))])))[1]
+                      ,unique(trim(gsub('出版年:','',catch_ISBN[which(grepl('出版年',catch_ISBN) & !grepl('流通',catch_ISBN))])))[1]
                       ,books)
     
     
