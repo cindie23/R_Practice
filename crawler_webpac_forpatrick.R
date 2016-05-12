@@ -2,6 +2,19 @@ library(rvest)
 
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
+trim_num <- function (x){
+  #gsub("^[[:punct:]]+|[[:punct:]]+$", "", x)
+  gsub("^[0-9]+|[0-9]+$", "\\1", x)
+}
+
+trim_split_punc <- function (x){
+  #gsub("^[[:punct:]]+|[[:punct:]]+$", "", x)
+  x = gsub("[[:punct:]]", "＊", x)
+  x = unlist(strsplit(x,'＊'))
+  x = x[which(nchar(x)==max(nchar(x)))][1]
+  return(x)
+}
+
 #TED Talk十八分鐘的祕密
 #中國悄悄占領全世界
 df = read.csv(file.choose(),stringsAsFactors=F)
@@ -11,6 +24,8 @@ name_list = df$書名
 export_df = data.frame('名稱'=character(),'ISBN'=character(),'出版年'=character(),'館藏冊數'=character(),stringsAsFactors=F)
 export_df[1:length(name_list),1] = name_list
 
+tmp_url='http://webpac.tphcc.gov.tw/toread/opac/search?q='
+
 for(xx in 1:length(name_list)){
   tryCatch({
     n = name_list[xx]
@@ -18,7 +33,7 @@ for(xx in 1:length(name_list)){
     n_trim = gsub('%','',n_trim)
     n_trim = gsub(' ','+',n_trim)
     n_trim = trim(n_trim)
-    tmp_url='http://webpac.tphcc.gov.tw/toread/opac/search?q='
+    n_trim = trim_num(n_trim)
     
     url = paste0(tmp_url,n_trim)
     total_css = read_html(url)
@@ -30,7 +45,9 @@ for(xx in 1:length(name_list)){
     
     #catch_ISBN = content_css[(which(grepl('ISBN',content_css))[1]+1):(length(content_css))]
     #catch_ISBN = content_css[(which(grepl('ISBN',content_css))[1]+1):(length(content_css))]
-    catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css))[1]+1):(length(content_css))]
+    #catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css) & grepl(trim_split_punc(n),content_css))[1]+1):(length(content_css))]
+    catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css) & grepl(trim_split_punc(n),content_css))[1])]
+    catch_ISBN = unlist(strsplit(catch_ISBN,'                                      '))
     
     books = trim(gsub('館藏流通狀態:','',catch_ISBN[which(grepl('館藏流通狀態',catch_ISBN) & !grepl('版本項',catch_ISBN))]))
     
@@ -44,7 +61,7 @@ for(xx in 1:length(name_list)){
                       ,books)
     
     
-    cat(paste0('\r','名稱: ',n,paste0(rep(' ',50),collapse=' ')))
+    cat(paste0('\r','名稱: ',n,'  ',round(xx/length(name_list)*100,3),'%',paste0(rep(' ',50),collapse=' ')))
     Sys.sleep(runif(1,2,5))
   }, error = function(e) {
     print(conditionMessage(e) )# 這就會是"demo error"
@@ -52,6 +69,9 @@ for(xx in 1:length(name_list)){
   })
  
 }
+
+write.csv(export_df,'D:\\abc\\wjhong\\projects\\webpac_forpatrick.csv',row.names=F)
+
 
 if(F){
   export_df$ISBN = trim(gsub('ISBN:','',export_df$ISBN))
@@ -66,5 +86,5 @@ if(F){
 }
 
 
-write.csv(export_df,'D:\\abc\\wjhong\\projects\\webpac_forpatrick.csv',row.names=F)
+
 
