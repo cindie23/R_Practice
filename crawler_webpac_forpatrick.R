@@ -1,3 +1,8 @@
+rm(list = ls()) #去除工作空間中所有物件
+gc() #記憶體釋放
+
+path = choose.dir()
+setwd(path)
 library(rvest)
 
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
@@ -75,6 +80,9 @@ for(xx in 1:length(name_list)){
                       ,unique(trim(gsub('出版年:','',catch_ISBN[which(grepl('出版年',catch_ISBN) & !grepl('流通',catch_ISBN))])))[1]
                       ,books)
     
+    ##
+    links = total_css %>% html_nodes("li a") %>% html_attr('href')
+    links = links[grepl('bibliographic_view',links)]
     
     cat(paste0('\r','名稱: ',n,'  ',round(xx/length(name_list)*100,3),'%',paste0(rep(' ',50),collapse=' ')))
     Sys.sleep(runif(1,2,5))
@@ -85,7 +93,7 @@ for(xx in 1:length(name_list)){
  
 }
 
-write.csv(export_df,'D:\\abc\\wjhong\\projects\\webpac_forpatrick.csv',row.names=F)
+write.csv(export_df,'D:\\abc\\wjhong\\projects\\webpac_forpatrick_2013_非文學.csv',row.names=F)
 
 
 if(F){
