@@ -20,6 +20,7 @@ trim_split_punc <- function (x){
   return(x)
 }
 
+##第一PART 爬出ISBN
 #TED Talk十八分鐘的祕密
 #中國悄悄占領全世界
 df = read.csv(file.choose(),stringsAsFactors=F)
@@ -95,7 +96,47 @@ for(xx in 1:length(name_list)){
 
 write.csv(export_df,'D:\\abc\\wjhong\\projects\\webpac_forpatrick_2013_非文學.csv',row.names=F)
 
+##第二PART 用ISBN逆爬
+library(tmcn)
 
+file_name= file.choose()
+df = read.csv(file_name,stringsAsFactors=F)
+
+df$ISBN逆查書名=''
+
+for(i in 1:nrow(df)){
+  if(!grepl(';',df$ISBN[i]) & !is.na(df$ISBN[i]) & nchar(df$ISBN[i])>5){
+    url = paste0(tmp_url,df$ISBN[i])
+    total_css = read_html(url)
+    
+    content_css = total_css %>% html_nodes("li") %>% html_text()
+    content_css = toUTF8(content_css)
+    content_css  = gsub('\n','',content_css)
+    content_css  = gsub('\r','',content_css)
+    content_css = trim(content_css)
+    
+    catch_ISBN = content_css[(which(grepl('單行本',content_css) & grepl('中文',content_css) & grepl('ISBN',content_css)))]
+    catch_ISBN = unlist(strsplit(catch_ISBN,'                                      '))
+    catch_ISBN = catch_ISBN[1]
+    catch_ISBN = trim(substr(catch_ISBN, max(unlist(gregexpr('\t',catch_ISBN)))+3,nchar(catch_ISBN)-1))
+    if(toString(catch_ISBN)==''){
+      catch_ISBN='錯誤'
+    }
+    df$ISBN逆查書名[i] = catch_ISBN
+  }else if(grepl(';',df$ISBN[i])){
+    df$ISBN逆查書名[i] = "多個ISBN"
+  }else if(is.na(df$ISBN[i])){
+    df$ISBN逆查書名[i] = "錯誤"
+  }
+  
+  cat(paste0('\r','ISBN: ',df$ISBN[i],' 書名:',df$ISBN逆查書名[i],'  ',round(i/nrow(df)*100,3),'%',paste0(rep(' ',50),collapse=' ')))
+  Sys.sleep(runif(1,2,5))
+}
+
+write.csv(df,paste0('逆查',basename(file_name)),row.names=F)
+basename(file_name)
+
+##用不到
 if(F){
   export_df$ISBN = trim(gsub('ISBN:','',export_df$ISBN))
   #export_df$ISBN = format(export_df$ISBN, scientific = FALSE)
