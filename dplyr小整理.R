@@ -7,7 +7,7 @@ library(plotrix)
 ##filter 篩選出col中為某值
 ##arrange 用來排序
 ##xtabs 觀看某col分布狀況
-## group_by + summerize 類似樞紐分析
+## group_by + summarize 類似樞紐分析
 ##mutate增加以及轉換col內容
 ##mutate_each 轉換所有col
 
