@@ -1,0 +1,11 @@
+readBin(lvr_land.path, what = "raw", n =3)
+readLines(file(lvr_land.path, encoding = "BIG5"), n = 1)
+readLines(file(lvr_land.path, encoding = "BIG5"), n = 5)
+file.info(lvr_land.path)
+lvr_land.info=file.info(lvr_land.path)
+colnames(lvr_land.info)
+lvr_land.info$size
+lvr_land.bin=readBin(lvr_land.path, what = "raw", n = lvr_land.info$size)
+library(stringi)
+lvr_land.txt<-stri_encode(lvr_land.bin, "BIG-5", "UTF-8")
+read.table(lvr_land.path, fileEncoding = "BIG-5")
